@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pranavam AI - Culturally Adaptive Music Generation</title>
+    <style>
+        :root {
+            --primary: #5D3FD3;
+            --secondary: #9D84E8;
+            --accent: #FF6B6B;
+            --light: #F9F7FF;
+            --dark: #222;
+            --text: #333;
+        }
+        
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            scroll-behavior: smooth;
+            color: var(--text);
+            background-color: var(--light);
+            line-height: 1.6;
+        }
+        
+        h1, h2, h3, h4 {
+            font-weight: 700;
+            margin-top: 0;
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header Styles */
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo span {
+            color: var(--accent);
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        
+        nav ul li {
+            margin-left: 2rem;
+        }
+        
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        nav ul li a:hover {
+            color: var(--accent);
+        }
+        
+        .cta-button {
+            background-color: var(--accent);
+            color: white;
+            padding: 0.7rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .cta-button:hover {
+            background-color: #ff5252;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 10px rgba(255, 107, 107, 0.3);
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(rgba(93, 63, 211, 0.8), rgba(93, 63, 211, 0.9)), url('/api/placeholder/1200/800') center/cover no-repeat;
+            color: white;
+            text-align: center;
+            padding: 12rem 2rem 8rem;
+            margin-top: 0;
+        }
+        
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto 2rem;
+        }
+        
+        .hero-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .secondary-button {
+            background-color: transparent;
+            color: white;
+            border: 2px solid white;
+            padding: 0.7rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .secondary-button:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: translateY(-3px);
+        }
+        
+        /* Vision Section */
+        .vision {
+            padding: 6rem 0;
+            text-align: center;
+            background-color: white;
+        }
+        
+        .section-title {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+            position: relative;
+            display: inline-block;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            width: 60px;
+            height: 3px;
+            background-color: var(--accent);
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .vision-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        /* Features Section */
+        .features {
+            padding: 6rem 0;
+            background-color: var(--light);
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .feature-card {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+        
+        .feature-icon {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+        
+        .feature-content {
+            padding: 2rem;
+        }
+        
+        .feature-content h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+        
+        /* How It Works Section */
+        .how-it-works {
+            padding: 6rem 0;
+            background-color: white;
+            text-align: center;
+        }
+        
+        .steps {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 3rem;
+            position: relative;
+        }
+        
+        .step {
+            width: 250px;
+            margin: 0 2rem 3rem;
+            position: relative;
+        }
+        
+        .step-number {
+            background-color: var(--primary);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 0 auto 1rem;
+        }
+        
+        .step h3 {
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+        }
+        
+        /* Music Animation */
+        .music-wave {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100px;
+            margin: 3rem 0;
+        }
+        
+        .bar {
+            background-color: var(--secondary);
+            width: 10px;
+            height: 30px;
+            border-radius: 10px;
+            margin: 0 5px;
+            animation: wave 1.5s infinite ease-in-out;
+        }
+        
+        .bar:nth-child(2) {
+            animation-delay: 0.2s;
+            height: 45px;
+        }
+        
+        .bar:nth-child(3) {
+            animation-delay: 0.4s;
+            height: 60px;
+        }
+        
+        .bar:nth-child(4) {
+            animation-delay: 0.6s;
+            height: 75px;
+        }
+        
+        .bar:nth-child(5) {
+            animation-delay: 0.8s;
+            height: 60px;
+        }
+        
+        .bar:nth-child(6) {
+            animation-delay: 1s;
+            height: 45px;
+        }
+        
+        .bar:nth-child(7) {
+            animation-delay: 1.2s;
+            height: 30px;
+        }
+        
+        @keyframes wave {
+            0%, 100% {
+                transform: scaleY(0.5);
+            }
+            50% {
+                transform: scaleY(1);
+            }
+        }
+        
+        /* Ethics Section */
+        .ethics {
+            padding: 6rem 0;
+            background-color: var(--light);
+        }
+        
+        .ethics-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .ethics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .ethics-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+        }
+        
+        .ethics-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.12);
+        }
+        
+        .ethics-card h3 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+        
+        /* Demo Section */
+        .demo {
+            padding: 6rem 0;
+            background-color: white;
+            text-align: center;
+        }
+        
+        .demo-container {
+            max-width: 800px;
+            margin: 3rem auto 0;
+            padding: 2rem;
+            background-color: var(--light);
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        /* CTA Section */
+        .cta {
+            padding: 8rem 0;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            text-align: center;
+        }
+        
+        .cta h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        /* Footer */
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 4rem 0 2rem;
+        }
+        
+        .footer-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+        }
+        
+        .footer-logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+        
+        .footer-links h4 {
+            margin-bottom: 1.5rem;
+            font-size: 1.2rem;
+        }
+        
+        .footer-links ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .footer-links ul li {
+            margin-bottom: 0.8rem;
+        }
+        
+        .footer-links ul li a {
+            color: #bbb;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .footer-links ul li a:hover {
+            color: white;
+        }
+        
+        .copyright {
+            text-align: center;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            color: #bbb;
+            font-size: 0.9rem;
+        }
+        
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .hero-buttons, .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .cta-button, .secondary-button {
+                width: 80%;
+                margin-bottom: 1rem;
+                text-align: center;
+            }
+            
+            .nav-container {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            nav ul {
+                margin-top: 1rem;
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            nav ul li {
+                margin: 0.5rem 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header & Navigation -->
+    <header>
+        <div class="container nav-container">
+            <div class="logo">Pranavam<span>AI</span></div>
+            <nav>
+                <ul>
+                    <li><a href="#vision">Our Vision</a></li>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#how-it-works">How It Works</a></li>
+                    <li><a href="#ethics">Ethics</a></li>
+                    <li><a href="#demo">Demo</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="container">
+            <h1>Music That Understands Culture & Emotion</h1>
+            <p>Pranavam AI leverages artificial intelligence to create culturally adaptive and emotionally resonant music compositions that truly connect with the human spirit.</p>
+            <div class="hero-buttons">
+                <a href="#demo" class="cta-button">Try It Now</a>
+                <a href="#vision" class="secondary-button">Learn More</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Vision Section -->
+    <section class="vision" id="vision">
+        <div class="container">
+            <h2 class="section-title">Our Vision</h2>
+            <div class="vision-content">
+                <p>At Pranavam AI, we believe that music is a universal language that transcends boundaries while honoring the rich diversity of cultural expression. Our vision is to create an AI music generation platform that preserves and celebrates cultural authenticity while pushing the boundaries of emotional expression in generated compositions.</p>
+                <p>By fine-tuning cutting-edge AI models with diverse cultural datasets, we're building technology that understands the nuances of musical traditions from around the world. Our mission is to democratize music creation while ensuring that AI-generated music maintains the depth, cultural sensitivity, and emotional resonance that makes music such a powerful form of human expression.</p>
+            </div>
+            
+            <div class="music-wave">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container">
+            <h2 class="section-title">Key Features</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-content">
+                        <div class="feature-icon">🌍</div>
+                        <h3>Cultural Adaptability</h3>
+                        <p>Our AI models have been trained on diverse musical traditions from around the world, enabling authentic generation of culturally-specific compositions that respect and honor their origins.</p>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-content">
+                        <div class="feature-icon">❤️</div>
+                        <h3>Emotional Intelligence</h3>
+                        <p>Pranavam AI understands emotional context, creating compositions that resonate on a deeper level and evoke specific feelings through careful manipulation of musical elements.</p>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-content">
+                        <div class="feature-icon">🔍</div>
+                        <h3>Transparent Creation</h3>
+                        <p>We provide visibility into how our AI generates each composition, explaining the cultural inspirations and emotional patterns that influence the creative process.</p>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-content">
+                        <div class="feature-icon">🔄</div>
+                        <h3>Flexible Customization</h3>
+                        <p>Fine-tune generated compositions by adjusting cultural influences, emotional intensity, instrumentation, and structural elements to match your creative vision.</p>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-content">
+                        <div class="feature-icon">🤝</div>
+                        <h3>Collaborative Creation</h3>
+                        <p>Work alongside our AI as a creative partner, guiding the composition process and receiving intelligent suggestions that expand your musical horizons.</p>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-content">
+                        <div class="feature-icon">🛡️</div>
+                        <h3>Ethical AI Practices</h3>
+                        <p>We're committed to respecting intellectual property rights, providing fair compensation to artists whose work contributes to our training data, and maintaining cultural sensitivity.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="how-it-works" id="how-it-works">
+        <div class="container">
+            <h2 class="section-title">How It Works</h2>
+            <p>Pranavam AI uses a sophisticated process to generate music that's both culturally authentic and emotionally resonant.</p>
+            
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Cultural Selection</h3>
+                    <p>Choose from a wide range of cultural musical traditions or blend multiple influences to create fusion compositions.</p>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>Emotional Mapping</h3>
+                    <p>Define the emotional journey you want your composition to take, from joy to melancholy, tension to release.</p>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>AI Generation</h3>
+                    <p>Our models process your inputs and generate compositions that authentically reflect the selected cultural and emotional parameters.</p>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <h3>Refinement</h3>
+                    <p>Fine-tune the generated composition by adjusting specific musical elements or providing feedback for regeneration.</p>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">5</div>
+                    <h3>Export & Use</h3>
+                    <p>Download your composition in various formats for personal enjoyment, creative projects, or commercial use with appropriate licensing.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Ethics Section -->
+    <section class="ethics" id="ethics">
+        <div class="container">
+            <h2 class="section-title">Our Ethical Commitments</h2>
+            <div class="ethics-content">
+                <p>At Pranavam AI, we believe that responsible AI development is essential, especially in creative domains like music that are deeply tied to cultural heritage and personal expression.</p>
+            </div>
+            
+            <div class="ethics-grid">
+                <div class="ethics-card">
+                    <h3>Cultural Respect</h3>
+                    <p>We work with cultural consultants to ensure our AI models accurately represent and respect the musical traditions they're trained on, avoiding appropriation or misrepresentation.</p>
+                </div>
+                
+                <div class="ethics-card">
+                    <h3>Fair Compensation</h3>
+                    <p>We provide fair compensation to artists whose work contributes to our training datasets, acknowledging their creative influence on our AI systems.</p>
+                </div>
+                
+                <div class="ethics-card">
+                    <h3>Transparency</h3>
+                    <p>We're open about how our AI works, what data it was trained on, and the limitations of our technology, enabling users to make informed decisions.</p>
+                </div>
+                
+                <div class="ethics-card">
+                    <h3>Human-AI Partnership</h3>
+                    <p>We design our platform to augment human creativity rather than replace it, positioning AI as a collaborative tool that expands creative possibilities.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Demo Section -->
+    <section class="demo" id="demo">
+        <div class="container">
+            <h2 class="section-title">Experience Pranavam AI</h2>
+            <p>Try our interactive demo to generate a short composition that reflects your chosen cultural influences and emotional context.</p>
+            
+            <div class="demo-container">
+                <p>Demo interface would be embedded here, allowing users to select cultural traditions, emotional parameters, and generate a sample composition.</p>
+                
+                <div class="hero-buttons">
+                    <a href="#" class="cta-button">Generate Sample</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="container">
+            <h2>Join the Musical Revolution</h2>
+            <p>Be among the first to create culturally authentic, emotionally resonant compositions with Pranavam AI.</p>
+            
+            <div class="cta-buttons">
+                <a href="#" class="cta-button">Sign Up for Early Access</a>
+                <a href="#" class="secondary-button">Request a Demo</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-container">
+                <div class="footer-about">
+                    <div class="footer-logo">Pranavam<span>AI</span></div>
+                    <p>Transforming music generation through culturally adaptive and emotionally resonant AI technology.</p>
+                </div>
+                
+                <div class="footer-links">
+                    <h4>Navigation</h4>
+                    <ul>
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#vision">Our Vision</a></li>
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#how-it-works">How It Works</a></li>
+                        <li><a href="#ethics">Ethics</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-links">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="#">Documentation</a></li>
+                        <li><a href="#">API</a></li>
+                        <li><a href="#">Research</a></li>
+                        <li><a href="#">Blog</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-links">
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Team</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                &copy; 2025 Pranavam AI. All rights reserved.
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
