@@ -51,21 +51,15 @@ jobs:
           Write-Output "Contents of dist directory:"
           Get-ChildItem -Path ./dist -Recurse | ForEach-Object { Write-Output $_.FullName }
 
-      - name: Debug dist contents
+      - name: Debug workspace
         run: |
-          Write-Output "Current directory:"
-          Get-Location
-          Write-Output "Contents of dist directory:"
-          Get-ChildItem -Path ./dist -Recurse | ForEach-Object { Write-Output $_.FullName }
-          Write-Output "File sizes:"
-          Get-ChildItem -Path ./dist -Recurse | ForEach-Object { Write-Output "$($_.FullName): $($_.Length) bytes" }
+          Write-Output "GitHub Workspace: $env:GITHUB_WORKSPACE"
+          Write-Output "Current directory: $(Get-Location)"
+          Write-Output "Directory contents:"
+          Get-ChildItem -Recurse | ForEach-Object { Write-Output $_.FullName }
 
       - name: Deploy to GitHub Pages
         run: |
-          # Store the current directory
-          $currentDir = Get-Location
-          Write-Output "Current directory: $currentDir"
-          
           # Configure git
           git config --global user.email "action@github.com"
           git config --global user.name "GitHub Action"
@@ -76,13 +70,17 @@ jobs:
           # Remove all files except .git
           Get-ChildItem -Path . -Exclude .git | Remove-Item -Recurse -Force
           
-          # Copy files from dist (using the stored directory)
-          $distPath = Join-Path $currentDir "dist"
-          Write-Output "Copying from: $distPath"
-          if (Test-Path $distPath) {
-              Copy-Item -Path "$distPath\*" -Destination . -Recurse
+          # Find and copy the dist directory
+          $workspaceRoot = $env:GITHUB_WORKSPACE
+          Write-Output "Workspace root: $workspaceRoot"
+          
+          # Look for dist directory in the workspace
+          $distDir = Get-ChildItem -Path $workspaceRoot -Recurse -Filter "dist" -Directory | Select-Object -First 1
+          if ($distDir) {
+              Write-Output "Found dist directory at: $($distDir.FullName)"
+              Copy-Item -Path "$($distDir.FullName)\*" -Destination . -Recurse
           } else {
-              Write-Error "Dist directory not found at: $distPath"
+              Write-Error "Could not find dist directory in workspace"
               exit 1
           }
           
