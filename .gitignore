@@ -53,4 +53,7 @@ coverage/
 .temp/
 
 # GitHub Actions
-.github/workflows/*.log 
+.github/workflows/*.log
+
+# GitHub Actions Runner
+actions-runner/ 
