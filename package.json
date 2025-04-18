@@ -3,13 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "echo 'Build step - customize this based on your needs'",
-    "start": "echo 'Start step - customize this based on your needs'"
+    "build": "echo 'Build step completed'",
+    "start": "echo 'Start step completed'"
   },
-  "dependencies": {
-    // Add your dependencies here
-  },
-  "devDependencies": {
-    // Add your devDependencies here
-  }
+  "dependencies": {},
+  "devDependencies": {}
 } 
