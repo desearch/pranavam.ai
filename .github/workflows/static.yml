@@ -60,6 +60,33 @@ jobs:
           enablement: true
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Check Repository Settings
+        run: |
+          try {
+            $headers = @{
+              "Authorization" = "token ${{ secrets.GITHUB_TOKEN }}"
+              "Accept" = "application/vnd.github.v3+json"
+            }
+            
+            # Check repository settings
+            $repoResponse = Invoke-RestMethod -Uri "https://api.github.com/repos/${{ github.repository }}" -Headers $headers
+            Write-Output "Repository Settings: $($repoResponse | ConvertTo-Json)"
+            
+            # Check if GitHub Pages is enabled
+            $pagesResponse = Invoke-RestMethod -Uri "https://api.github.com/repos/${{ github.repository }}/pages" -Headers $headers
+            Write-Output "GitHub Pages Settings: $($pagesResponse | ConvertTo-Json)"
+            
+            if ($pagesResponse.status -eq "built") {
+              Write-Output "GitHub Pages is enabled and built"
+            } else {
+              Write-Output "GitHub Pages status: $($pagesResponse.status)"
+              Write-Output "Please enable GitHub Pages in repository settings"
+            }
+          } catch {
+            Write-Output "Error checking repository settings: $_"
+            Write-Output "Response: $($_.Exception.Response.GetResponseStream())"
+          }
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
@@ -67,27 +94,6 @@ jobs:
           path: './dist'
           retention-days: 1
           if-no-files-found: error
-
-      - name: Check Pages Status
-        run: |
-          try {
-            $headers = @{
-              "Authorization" = "token ${{ secrets.GITHUB_TOKEN }}"
-              "Accept" = "application/vnd.github.v3+json"
-            }
-            $response = Invoke-RestMethod -Uri "https://api.github.com/repos/${{ github.repository }}/pages" -Headers $headers
-            Write-Output "Pages Status: $($response | ConvertTo-Json)"
-            
-            # Check if Pages is enabled
-            if ($response.status -eq "built") {
-              Write-Output "GitHub Pages is enabled and built"
-            } else {
-              Write-Output "GitHub Pages status: $($response.status)"
-            }
-          } catch {
-            Write-Output "Error checking Pages status: $_"
-            Write-Output "Response: $($_.Exception.Response.GetResponseStream())"
-          }
 
       - name: Deploy to GitHub Pages
         id: deployment
