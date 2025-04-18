@@ -40,11 +40,11 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        shell: pwsh
+        shell: powershell
         run: npm ci
 
       - name: Build
-        shell: pwsh
+        shell: powershell
         run: npm run build
 
       - name: Setup Pages
