@@ -51,12 +51,22 @@ jobs:
           Write-Output "Contents of dist directory:"
           Get-ChildItem -Path ./dist -Recurse | ForEach-Object { Write-Output $_.FullName }
 
-      - name: Debug workspace
+      - name: Store dist contents
         run: |
-          Write-Output "GitHub Workspace: $env:GITHUB_WORKSPACE"
-          Write-Output "Current directory: $(Get-Location)"
-          Write-Output "Directory contents:"
-          Get-ChildItem -Recurse | ForEach-Object { Write-Output $_.FullName }
+          # Store the current directory
+          $currentDir = Get-Location
+          Write-Output "Current directory: $currentDir"
+          
+          # Create a temporary directory for dist contents
+          $tempDir = Join-Path $env:RUNNER_TEMP "dist"
+          New-Item -ItemType Directory -Force -Path $tempDir
+          
+          # Copy dist contents to temporary directory
+          Copy-Item -Path "./dist/*" -Destination $tempDir -Recurse
+          
+          # Verify the contents
+          Write-Output "Contents of temp directory:"
+          Get-ChildItem -Path $tempDir -Recurse | ForEach-Object { Write-Output $_.FullName }
 
       - name: Deploy to GitHub Pages
         run: |
@@ -70,17 +80,13 @@ jobs:
           # Remove all files except .git
           Get-ChildItem -Path . -Exclude .git | Remove-Item -Recurse -Force
           
-          # Find and copy the dist directory
-          $workspaceRoot = $env:GITHUB_WORKSPACE
-          Write-Output "Workspace root: $workspaceRoot"
-          
-          # Look for dist directory in the workspace
-          $distDir = Get-ChildItem -Path $workspaceRoot -Recurse -Filter "dist" -Directory | Select-Object -First 1
-          if ($distDir) {
-              Write-Output "Found dist directory at: $($distDir.FullName)"
-              Copy-Item -Path "$($distDir.FullName)\*" -Destination . -Recurse
+          # Copy from temporary directory
+          $tempDir = Join-Path $env:RUNNER_TEMP "dist"
+          Write-Output "Copying from temp directory: $tempDir"
+          if (Test-Path $tempDir) {
+              Copy-Item -Path "$tempDir\*" -Destination . -Recurse
           } else {
-              Write-Error "Could not find dist directory in workspace"
+              Write-Error "Temp directory not found"
               exit 1
           }
           
