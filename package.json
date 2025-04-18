@@ -1,0 +1,15 @@
+{
+  "name": "pranavam.ai",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "echo 'Build step - customize this based on your needs'",
+    "start": "echo 'Start step - customize this based on your needs'"
+  },
+  "dependencies": {
+    // Add your dependencies here
+  },
+  "devDependencies": {
+    // Add your devDependencies here
+  }
+} 
