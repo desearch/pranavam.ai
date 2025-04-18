@@ -1,0 +1,12 @@
+﻿{
+  "repositoryName": "desearch/pranavam.ai",
+  "pipelineDirectory": "pranavam.ai",
+  "workspaceDirectory": "pranavam.ai\\pranavam.ai",
+  "repositories": {
+    "desearch/pranavam.ai": {
+      "repositoryPath": "pranavam.ai\\pranavam.ai",
+      "lastRunOn": "04/18/2025 23:04:59 +02:00"
+    }
+  },
+  "lastRunOn": "04/18/2025 23:04:59 +02:00"
+}
