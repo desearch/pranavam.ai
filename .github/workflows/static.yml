@@ -72,8 +72,10 @@ jobs:
           # Remove all files except .git
           Get-ChildItem -Path . -Exclude .git | Remove-Item -Recurse -Force
           
-          # Copy files from dist
-          Copy-Item -Path ./dist/* -Destination . -Recurse
+          # Copy files from dist (using absolute path)
+          $distPath = Join-Path $env:GITHUB_WORKSPACE "dist"
+          Write-Output "Copying from: $distPath"
+          Copy-Item -Path "$distPath\*" -Destination . -Recurse
           
           # Add all files
           git add .
