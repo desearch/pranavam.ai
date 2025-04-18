@@ -62,6 +62,10 @@ jobs:
 
       - name: Deploy to GitHub Pages
         run: |
+          # Store the current directory
+          $currentDir = Get-Location
+          Write-Output "Current directory: $currentDir"
+          
           # Configure git
           git config --global user.email "action@github.com"
           git config --global user.name "GitHub Action"
@@ -72,10 +76,15 @@ jobs:
           # Remove all files except .git
           Get-ChildItem -Path . -Exclude .git | Remove-Item -Recurse -Force
           
-          # Copy files from dist (using absolute path)
-          $distPath = Join-Path $env:GITHUB_WORKSPACE "dist"
+          # Copy files from dist (using the stored directory)
+          $distPath = Join-Path $currentDir "dist"
           Write-Output "Copying from: $distPath"
-          Copy-Item -Path "$distPath\*" -Destination . -Recurse
+          if (Test-Path $distPath) {
+              Copy-Item -Path "$distPath\*" -Destination . -Recurse
+          } else {
+              Write-Error "Dist directory not found at: $distPath"
+              exit 1
+          }
           
           # Add all files
           git add .
