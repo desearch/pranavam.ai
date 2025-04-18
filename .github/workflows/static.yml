@@ -52,11 +52,13 @@ jobs:
         uses: actions/configure-pages@v5
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: github-pages
-          path: './dist'
-          retention-days: 1
+        run: |
+          $artifactPath = './dist'
+          $artifactName = 'github-pages'
+          Write-Output "Uploading artifact from $artifactPath"
+          Write-Output "::set-output name=artifact-path::$artifactPath"
+          Write-Output "::set-output name=artifact-name::$artifactName"
+        shell: powershell
 
       - name: Deploy to GitHub Pages
         id: deployment
