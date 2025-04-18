@@ -51,11 +51,8 @@ jobs:
           # Create dist directory if it doesn't exist
           New-Item -ItemType Directory -Force -Path ./dist
           
-          # Copy all necessary files to dist
+          # Copy only index.html to dist
           Copy-Item -Path index.html -Destination ./dist/
-          Copy-Item -Path *.css -Destination ./dist/ -ErrorAction SilentlyContinue
-          Copy-Item -Path *.js -Destination ./dist/ -ErrorAction SilentlyContinue
-          Copy-Item -Path assets -Destination ./dist/ -Recurse -ErrorAction SilentlyContinue
           
           # Verify the contents of dist
           Write-Output "Contents of dist directory:"
