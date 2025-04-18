@@ -11,16 +11,9 @@ on:
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
-  deployments: write
-
-# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
-# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
 
 jobs:
   build-and-deploy:
@@ -58,20 +51,6 @@ jobs:
           Write-Output "Contents of dist directory:"
           Get-ChildItem -Path ./dist -Recurse | ForEach-Object { Write-Output $_.FullName }
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-        with:
-          enablement: true
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: github-pages
-          path: './dist'
-          retention-days: 1
-          if-no-files-found: error
-
       - name: Debug dist contents
         run: |
           Write-Output "Current directory:"
@@ -80,16 +59,13 @@ jobs:
           Get-ChildItem -Path ./dist -Recurse | ForEach-Object { Write-Output $_.FullName }
           Write-Output "File sizes:"
           Get-ChildItem -Path ./dist -Recurse | ForEach-Object { Write-Output "$($_.FullName): $($_.Length) bytes" }
-          Write-Output "Environment variables:"
-          Get-ChildItem env: | ForEach-Object { Write-Output "$($_.Name): $($_.Value)" }
 
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: dist
           branch: gh-pages
-          folder: ./dist
           clean: true
           clean-exclude: |
             .git
