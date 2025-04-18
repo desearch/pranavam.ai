@@ -81,7 +81,20 @@ jobs:
           Get-Location
           Write-Output "Contents of dist directory:"
           Get-ChildItem -Path ./dist -Recurse | ForEach-Object { Write-Output $_.FullName }
+          Write-Output "File sizes:"
+          Get-ChildItem -Path ./dist -Recurse | ForEach-Object { Write-Output "$($_.FullName): $($_.Length) bytes" }
+          Write-Output "Environment variables:"
+          Get-ChildItem env: | ForEach-Object { Write-Output "$($_.Name): $($_.Value)" }
 
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          branch: gh-pages
+          folder: ./dist
+          clean: true
+          clean-exclude: |
+            .git
+            .github
+          single-commit: true
