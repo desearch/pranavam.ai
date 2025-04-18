@@ -70,13 +70,42 @@ jobs:
 
       - name: Check Pages Status
         run: |
-          $headers = @{
-            "Authorization" = "token ${{ secrets.GITHUB_TOKEN }}"
-            "Accept" = "application/vnd.github.v3+json"
+          try {
+            $headers = @{
+              "Authorization" = "token ${{ secrets.GITHUB_TOKEN }}"
+              "Accept" = "application/vnd.github.v3+json"
+            }
+            $response = Invoke-RestMethod -Uri "https://api.github.com/repos/${{ github.repository }}/pages" -Headers $headers
+            Write-Output "Pages Status: $($response | ConvertTo-Json)"
+            
+            # Check if Pages is enabled
+            if ($response.status -eq "built") {
+              Write-Output "GitHub Pages is enabled and built"
+            } else {
+              Write-Output "GitHub Pages status: $($response.status)"
+            }
+          } catch {
+            Write-Output "Error checking Pages status: $_"
+            Write-Output "Response: $($_.Exception.Response.GetResponseStream())"
           }
-          $response = Invoke-RestMethod -Uri "https://api.github.com/repos/${{ github.repository }}/pages" -Headers $headers
-          Write-Output "Pages Status: $($response | ConvertTo-Json)"
 
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+        continue-on-error: true
+
+      - name: Check Deployment Status
+        if: always()
+        run: |
+          try {
+            $headers = @{
+              "Authorization" = "token ${{ secrets.GITHUB_TOKEN }}"
+              "Accept" = "application/vnd.github.v3+json"
+            }
+            $deploymentId = "${{ steps.deployment.outputs.deployment_id }}"
+            $response = Invoke-RestMethod -Uri "https://api.github.com/repos/${{ github.repository }}/pages/deployments/$deploymentId" -Headers $headers
+            Write-Output "Deployment Status: $($response | ConvertTo-Json)"
+          } catch {
+            Write-Output "Error checking deployment status: $_"
+            Write-Output "Response: $($_.Exception.Response.GetResponseStream())"
+          }
