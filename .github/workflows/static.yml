@@ -70,10 +70,11 @@ jobs:
 
       - name: Check Pages Status
         run: |
-          $response = Invoke-RestMethod -Uri "https://api.github.com/repos/$env:GITHUB_REPOSITORY/pages" -Headers @{
-            "Authorization" = "Bearer $env:GITHUB_TOKEN"
+          $headers = @{
+            "Authorization" = "token ${{ secrets.GITHUB_TOKEN }}"
             "Accept" = "application/vnd.github.v3+json"
           }
+          $response = Invoke-RestMethod -Uri "https://api.github.com/repos/${{ github.repository }}/pages" -Headers $headers
           Write-Output "Pages Status: $($response | ConvertTo-Json)"
 
       - name: Deploy to GitHub Pages
