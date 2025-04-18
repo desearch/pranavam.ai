@@ -11,9 +11,14 @@ on:
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
-  contents: write
+  contents: read
   pages: write
   id-token: write
+
+# Allow only one concurrent deployment
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
 
 jobs:
   build-and-deploy:
@@ -50,50 +55,14 @@ jobs:
           Write-Output "Contents of dist directory:"
           Get-ChildItem -Path ./dist -Recurse | ForEach-Object { Write-Output $_.FullName }
 
-      - name: Store dist contents
-        run: |
-          # Store the current directory
-          $currentDir = Get-Location
-          Write-Output "Current directory: $currentDir"
-          
-          # Create a temporary directory for dist contents
-          $tempDir = Join-Path $env:RUNNER_TEMP "dist"
-          New-Item -ItemType Directory -Force -Path $tempDir
-          
-          # Copy dist contents to temporary directory
-          Copy-Item -Path "./dist/*" -Destination $tempDir -Recurse
-          
-          # Verify the contents
-          Write-Output "Contents of temp directory:"
-          Get-ChildItem -Path $tempDir -Recurse | ForEach-Object { Write-Output $_.FullName }
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './dist'
 
       - name: Deploy to GitHub Pages
-        run: |
-          # Configure git
-          git config --global user.email "action@github.com"
-          git config --global user.name "GitHub Action"
-          
-          # Switch to gh-pages branch
-          git checkout gh-pages
-          
-          # Remove all files except .git
-          Get-ChildItem -Path . -Exclude .git | Remove-Item -Recurse -Force
-          
-          # Copy from temporary directory
-          $tempDir = Join-Path $env:RUNNER_TEMP "dist"
-          Write-Output "Copying from temp directory: $tempDir"
-          if (Test-Path $tempDir) {
-              Copy-Item -Path "$tempDir\*" -Destination . -Recurse
-          } else {
-              Write-Error "Temp directory not found"
-              exit 1
-          }
-          
-          # Add all files
-          git add .
-          
-          # Commit changes
-          git commit -m "Deploy: ${{ github.sha }}"
-          
-          # Push changes
-          git push origin gh-pages
+        id: deployment
+        uses: actions/deploy-pages@v4
