@@ -61,13 +61,25 @@ jobs:
           Get-ChildItem -Path ./dist -Recurse | ForEach-Object { Write-Output "$($_.FullName): $($_.Length) bytes" }
 
       - name: Deploy to GitHub Pages
-        id: deployment
-        uses: JamesIves/github-pages-deploy-action@v4
-        with:
-          folder: dist
-          branch: gh-pages
-          clean: true
-          clean-exclude: |
-            .git
-            .github
-          single-commit: true
+        run: |
+          # Configure git
+          git config --global user.email "action@github.com"
+          git config --global user.name "GitHub Action"
+          
+          # Switch to gh-pages branch
+          git checkout gh-pages
+          
+          # Remove all files except .git
+          Get-ChildItem -Path . -Exclude .git | Remove-Item -Recurse -Force
+          
+          # Copy files from dist
+          Copy-Item -Path ./dist/* -Destination . -Recurse
+          
+          # Add all files
+          git add .
+          
+          # Commit changes
+          git commit -m "Deploy: ${{ github.sha }}"
+          
+          # Push changes
+          git push origin gh-pages
