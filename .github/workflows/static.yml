@@ -52,11 +52,11 @@ jobs:
         uses: actions/configure-pages@v5
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
+          name: pages
           path: './dist'
           retention-days: 1
-        continue-on-error: false
 
       - name: Deploy to GitHub Pages
         id: deployment
