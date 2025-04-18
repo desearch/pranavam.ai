@@ -52,6 +52,7 @@ jobs:
           Copy-Item -Path *.css -Destination ./dist/ -ErrorAction SilentlyContinue
           Copy-Item -Path *.js -Destination ./dist/ -ErrorAction SilentlyContinue
           Copy-Item -Path assets -Destination ./dist/ -Recurse -ErrorAction SilentlyContinue
+          Get-ChildItem -Path ./dist -Recurse | ForEach-Object { Write-Output $_.FullName }
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
@@ -66,6 +67,14 @@ jobs:
           path: './dist'
           retention-days: 1
           if-no-files-found: error
+
+      - name: Check Pages Status
+        run: |
+          $response = Invoke-RestMethod -Uri "https://api.github.com/repos/$env:GITHUB_REPOSITORY/pages" -Headers @{
+            "Authorization" = "Bearer $env:GITHUB_TOKEN"
+            "Accept" = "application/vnd.github.v3+json"
+          }
+          Write-Output "Pages Status: $($response | ConvertTo-Json)"
 
       - name: Deploy to GitHub Pages
         id: deployment
